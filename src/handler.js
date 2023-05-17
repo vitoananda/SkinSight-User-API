@@ -15,7 +15,7 @@ const signUp = async (email, password, name, phone) => {
     });
     return user;
   } catch (error) {
-    console.log('Error registering user:', error);
+    console.log('Error melakukan sign up:', error);
     if (error.code === 'auth/email-already-in-use') {
       throw new Error('Email sudah terdaftar');
     } else {
@@ -30,7 +30,7 @@ const signIn = async (email, password) => {
     const user = userCredential.user;
     return user;
   } catch (error) {
-    console.log('Error logging in user:', error);
+    console.log('Error melakukan sign in:', error);
     throw error;
   }
 };
@@ -39,7 +39,7 @@ const signOutUser = async () => {
   try {
     await signOut(auth);
   } catch (error) {
-    console.log('Error logging out user:', error);
+    console.log('Error melakukan sign out:', error);
     throw error;
   }
 };
@@ -53,18 +53,17 @@ const getUserData = async (uid) => {
     }
     return null;
   } catch (error) {
-    console.log('Error getting user data:', error);
+    console.log('Error mendapatkan data user:', error);
     throw error;
   }
 };
 
-const editProfile = async (uid, email, password, phone, currentEmail, currentPassword) => {
+const editProfile = async (uid, email, password, currentEmail, currentPassword) => {
   try {
     const { user } = await signInWithEmailAndPassword(auth, currentEmail, currentPassword);
     if (user.uid === uid) {
       const userDoc = doc(db, 'users', uid);
       const updateData = {};
-      if (phone) updateData.phone = phone;
       if (email) updateData.email = email;
 
       await updateDoc(userDoc, updateData);
@@ -76,7 +75,7 @@ const editProfile = async (uid, email, password, phone, currentEmail, currentPas
       return false;
     }
   } catch (error) {
-    console.log('Error editing profile:', error);
+    console.log('Error merubah email:', error);
     if (error.code === 'auth/email-already-in-use') {
       throw new Error('Email sudah digunakan oleh akun lain');
     } else {
@@ -88,9 +87,9 @@ const editProfile = async (uid, email, password, phone, currentEmail, currentPas
 const resetPassword = async (email) => {
     try {
       await sendPasswordResetEmail(auth, email);
-      console.log('Password reset email sent to:', email);
+      console.log('Link reset email telah dikirimkan ke:', email);
     } catch (error) {
-      console.log('Error sending password reset email:', error);
+      console.log('Error mengirim email reset password:', error);
       throw error;
     }
   };

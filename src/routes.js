@@ -1,14 +1,14 @@
 const Joi = require('joi');
 const { signUp, signIn, signOutUser, getUserData, editProfile, resetPassword } = require('../src/handler');
 
-const registerRoute = {
+const singUpRoute = {
   method: 'POST',
   path: '/sign-up',
   handler: async (request, h) => {
     const { email, password, name,  phone,} = request.payload;
     try {
       const user = await signUp(email, password, name, phone);
-      return h.response({ message: 'User registered', uid: user.uid }).code(201);
+      return h.response({ message: 'User berhasil di tambahkan', uid: user.uid }).code(201);
     } catch (error) {
       console.error('Error registering user:', error);
       return h.response({ message: error.message }).code(400);
@@ -28,7 +28,7 @@ const registerRoute = {
   },
 };
 
-const loginRoute = {
+const signInRoute = {
   method: 'POST',
   path: '/sign-in',
   handler: async (request, h) => {
@@ -58,10 +58,10 @@ const resetPasswordRoute = {
     const { email } = request.payload;
     try {
       await resetPassword(email);
-      return h.response({ message: 'Password reset email sent' }).code(200);
+      return h.response({ message: 'Link reset password telah di kirim ke email' }).code(200);
     } catch (error) {
-      console.error('Error resetting password:', error);
-      return h.response({ message: 'Error resetting password' }).code(500);
+      console.error('Error melakukan reset password:', error);
+      return h.response({ message: 'Error melakukan reset password' }).code(500);
     }
   },
   options: {
@@ -86,27 +86,27 @@ const userInfoRoute = {
         return h.response('Data tidak ditemukan').code(404);
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
-      return h.response('Error fetching user data').code(500);
+      console.error('Error saat mengambil data pengguna:', error);
+      return h.response('Error saat mengambil data pengguna').code(500);
     }
   },
 };
 
-const logoutRoute = {
+const signOutRoute = {
   method: 'POST',
-  path: '/logout',
+  path: '/sign-out',
   handler: async (request, h) => {
     try {
       await signOutUser();
-      return h.response({ message: 'Berhasil logout' }).code(200);
+      return h.response({ message: 'Berhasil signout' }).code(200);
     } catch (error) {
-      console.error('Error logging out user:', error);
-      return h.response({ message: 'Error logging out user' }).code(400);
+      console.error('Error melakukan sign out:', error);
+      return h.response({ message: 'Error melakukan sign out' }).code(400);
     }
   },
 };
 
-const editProfileRoute = {
+const editEmailRoute = {
   method: 'PUT',
   path: '/edit-email/{uid}',
   options: {
@@ -114,7 +114,6 @@ const editProfileRoute = {
       payload: Joi.object({
         email: Joi.string().email().optional(),
         password: Joi.string().min(8).optional(),
-        phone: Joi.string().optional(),
         currentEmail: Joi.string().email().required(),
         currentPassword: Joi.string().min(8).required(),
       }),
@@ -125,20 +124,20 @@ const editProfileRoute = {
   },
   handler: async (request, h) => {
     const { uid } = request.params;
-    const { email, password, phone, currentEmail, currentPassword } = request.payload;
+    const { email, password, currentEmail, currentPassword } = request.payload;
 
     try {
-      const result = await editProfile(uid, email, password, phone, currentEmail, currentPassword);
+      const result = await editProfile(uid, email, password, currentEmail, currentPassword);
       if (result) {
         return h.response({ message: 'Email berhasil di ubah' }).code(200);
       } else {
         return h.response({ message: 'User tidak diizinkan untuk mengedit profil' }).code(403);
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
-      return h.response({ message: 'Error updating profile' }).code(500);
+      console.error('Error melakukan update email:', error);
+      return h.response({ message: 'Error melakukan update email' }).code(500);
     }
   },
 };
 
-module.exports = [registerRoute, loginRoute, userInfoRoute, logoutRoute, editProfileRoute, resetPasswordRoute];
+module.exports = [singUpRoute, signInRoute, userInfoRoute, signOutRoute, editEmailRoute, resetPasswordRoute];
