@@ -1,7 +1,6 @@
 const Joi = require('joi');
 const { signUp, signIn, signOutUser, getUserData, editProfile, resetPassword } = require('../src/handler');
 
-
 const singUpRoute = {
   method: 'POST',
   path: '/sign-up',
@@ -36,10 +35,24 @@ const signInRoute = {
     const { email, password } = request.payload;
     try {
       const user = await signIn(email, password);
-      return h.response('Sign in berhasil').code(200);
+      const response = h.response({
+        status: 'Success',
+        message: 'Sign in berhasil',
+        data:{
+            uid: user.uid, 
+            email: user.email
+        }
+      }
+      );
+      response.code(200);
+      return response;
     } catch (error) {
-      console.error('Error logging in user:', error);
-      return h.response('Error logging in user').code(500);
+        const response = h.response({
+            status: 'Failed',
+            message: 'Error melakukan Sign In',
+        })
+        response.code(500);
+        return response;
     }
   },
   options: {
