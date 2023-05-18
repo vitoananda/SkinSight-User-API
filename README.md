@@ -9,8 +9,9 @@
 | POST   | /sign-out          | 
 | PUT    | /edit-email/{uid}  | 
 
+<hr>
 
-### POST /sign-up
+### <b>POST /sign-up</b>
 Mendaftarkan user baru ke dalam database. 
 
 Request body: 
@@ -26,8 +27,9 @@ Response:
 
 201 Created jika user berhasil didaftarkan. 
 
+<hr>
 
-### POST /sign in
+### <b>POST /sign in</b>
 Melakukan sign in user. 
 
 Request body:
@@ -41,8 +43,9 @@ Response:
 
 200 OK jika sign in berhasil.
 
+<hr>
 
-### POST /reset-password
+### <b>POST /reset-password</b>
 Me request reset password user.
 
 Request body:
@@ -56,8 +59,9 @@ Response:
 
 200 OK jika permintaan reset password berhasil.
 
+<hr>
 
-### GET /user/{uid}
+### <b>GET /user/{uid}</b>
 Mengambil informasi user berdasarkan uid.
 
 Request parameter:
@@ -67,15 +71,18 @@ Response:
 
 200 OK jika data user berhasil ditemukan. 
 
-### POST /sign-out
+<hr>
+
+### <b>POST /sign-out</b>
 Melakukan sign out user dari aplikasi.
 
 Response:
 
 200 OK jika sign out berhasil.
 
+<hr>
 
-### PUT /edit-email/{uid}
+### <b>PUT /edit-email/{uid}</b>
 Mengubah email user berdasarkan uid.
 
 Request parameter:
