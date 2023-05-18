@@ -95,5 +95,5 @@ const resetPassword = async (email) => {
     }
   };
 
-module.exports = { signUp, signIn, signOutUser, getUserData, editProfile, resetPassword,addArticle };
+module.exports = { signUp, signIn, signOutUser, getUserData, editProfile, resetPassword };
 
