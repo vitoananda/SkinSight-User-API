@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const { signUp, signIn, signOutUser, getUserData, editProfile, resetPassword } = require('../src/handler');
 
+
 const singUpRoute = {
   method: 'POST',
   path: '/sign-up',

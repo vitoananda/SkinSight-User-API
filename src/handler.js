@@ -3,6 +3,7 @@ const { doc, setDoc, getDoc, updateDoc } = require('firebase/firestore');
 const { auth, db } = require('../src/db/firebase');
 const { sendPasswordResetEmail } = require('firebase/auth');
 
+
 const signUp = async (email, password, name, phone) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -94,4 +95,5 @@ const resetPassword = async (email) => {
     }
   };
 
-module.exports = { signUp, signIn, signOutUser, getUserData, editProfile, resetPassword };
+module.exports = { signUp, signIn, signOutUser, getUserData, editProfile, resetPassword,addArticle };
+
