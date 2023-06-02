@@ -7,7 +7,9 @@
 | POST   | /reset-password    | 
 | GET    | /user/{uid}        | 
 | POST   | /sign-out          | 
-| PUT    | /edit-email/{uid}  | 
+| PUT    | /edit-email/{uid}  |
+| POST   | /user/{uid}/profile-picture  |
+
 
 <hr>
 
@@ -101,4 +103,12 @@ Response:
 
 200 OK jika profil berhasil diubah.
 
+### <b>POST /user/{uid}/profile-picture</b>
+menambahkan profile picture user berdasarkan uid
+
+Request parameter:
+uid: uid user
+
+request body:
+<p align="left"> <img src="./documentation asset/Screenshot_7.jpg" width="200" height="150" /> </p>
 

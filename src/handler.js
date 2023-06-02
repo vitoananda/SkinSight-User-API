@@ -109,32 +109,38 @@ const uploadProfilePictureHandler = async (request, h) => {
   console.log(request.payload.file);
   try {
     if (!request.payload.file) {
-      return h.response('No file uploaded.').code(400);
+      const response = h.response({
+        status: 'Failed',
+        message : 'Tidak ada file yang ditambahkan'
+      });
+      response.code(400);
     }
 
     return new Promise(async (resolve, reject) => {
-      // Create a new blob in the bucket and upload file data
       const blob = bucket.file(request.payload.file.hapi.filename);
       const blobStream = blob.createWriteStream();
 
       blobStream.on('error', (err) => {
-        reject(err);
+        const response = h.response({
+          status: 'Failed',
+          message : 'Terjadi error menambahkan profile picture'
+        });
+        response.code(500);
+        reject(response);
       });
 
       blobStream.on('finish', async () => {
-        // File successfully uploaded to the bucket
-
-        // Get the public URL of the uploaded file
         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-
-        // Extract UID from request parameters
         const { uid } = request.params;
-
-        // Update user document with imageUrl
         const userDoc = doc(db, 'users', uid);
         await updateDoc(userDoc, { imgUrl: publicUrl });
 
-        resolve(h.response('Profile picture berhasil ditambahkan.').code(200));
+        const response = h.response({
+          status: 'Success',
+          message : 'Profile picture berhasil ditambahkan'
+        });
+        response.code(200);
+        resolve(response);
       });
 
       blobStream.end(request.payload.file._data);
