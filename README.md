@@ -222,7 +222,7 @@ Request parameter:
 uid: uid user
 
 request body:
-<p align="left"> <img src="./documentation asset/Screenshot_7.jpg" width="500" height="200" /> </p>
+<p align="left"> <img src="./documentation asset/Screenshot_7.jpg" width="700" height="200" /> </p>
 
 Response:
 
