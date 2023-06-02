@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { signUp, signIn, signOutUser, getUserData, editProfile, resetPassword } = require('../src/handler');
+const { multerMid, signUp, signIn, signOutUser, getUserData, editEmail, resetPassword, uploadProfilePictureHandler } = require('../src/handler');
 
 const singUpRoute = {
   method: 'POST',
@@ -8,16 +8,29 @@ const singUpRoute = {
     const { email, password, name,  phone,} = request.payload;
     try {
       const user = await signUp(email, password, name, phone);
-      return h.response({ message: 'User berhasil di tambahkan', uid: user.uid }).code(201);
+      const response = h.response({
+        status: 'Success',
+        message: 'User berhasil di tambahkan',
+        data : {
+          uid: user.uid,
+          name : user.name
+        }
+      }
+      );
+      response.code(201);
+      return response;
     } catch (error) {
-      console.error('Error registering user:', error);
-      return h.response({ message: error.message }).code(400);
+      const response = h.response({
+        status: 'Failed',
+        message: 'Error menambahkan user',
+    })
+    response.code(400);
+    return response;
     }
   },
   options: {
     validate: {
       payload: Joi.object({
-        
         email: Joi.string().email().required(),
         password: Joi.string().min(8).required(),
         name: Joi.string().required(),
@@ -72,10 +85,20 @@ const resetPasswordRoute = {
     const { email } = request.payload;
     try {
       await resetPassword(email);
-      return h.response({ message: 'Link reset password telah di kirim ke email' }).code(200);
+      const response = h.response({
+        status: 'Success',
+        message: 'Link reset password telah di kirim ke email',
+      }
+      );
+      response.code(200);
+      return response;
     } catch (error) {
-      console.error('Error melakukan reset password:', error);
-      return h.response({ message: 'Error melakukan reset password' }).code(500);
+      const response = h.response({
+        status: 'Failed',
+        message: 'Error melakukan reset password',
+    })
+    response.code(500);
+    return response;
     }
   },
   options: {
@@ -95,13 +118,33 @@ const userInfoRoute = {
     try {
       const data = await getUserData(uid);
       if (data) {
-        return h.response({ email: data.email, phone: data.phone }).code(200);
+        const response = h.response({
+          status: 'Success',
+          data: {
+            name: data.name, email: data.email, phone: data.phone, imgUrl: data.imgUrl
+          },
+        }
+        );
+        response.code(200);
+        return response;
       } else {
-        return h.response('Data tidak ditemukan').code(404);
+        const response = h.response({
+          status: 'Failed',
+          message: 'Data tidak ditemukan',
+        }
+        );
+        response.code(404);
+        return response;
       }
     } catch (error) {
+      const response = h.response({
+        status: 'Failed',
+        message: 'Error saat mengambil data pengguna',
+      }
+      );
       console.error('Error saat mengambil data pengguna:', error);
-      return h.response('Error saat mengambil data pengguna').code(500);
+      response.code(500);
+      return response;
     }
   },
 };
@@ -112,10 +155,21 @@ const signOutRoute = {
   handler: async (request, h) => {
     try {
       await signOutUser();
-      return h.response({ message: 'Berhasil signout' }).code(200);
+      const response = h.response({
+        status: 'Success',
+        message: 'Berhasil Sign Out',
+      }
+      );
+      response.code(200);
+      return response;
     } catch (error) {
-      console.error('Error melakukan sign out:', error);
-      return h.response({ message: 'Error melakukan sign out' }).code(400);
+      const response = h.response({
+        status: 'Failed',
+        message: 'Error melakukan Sign Out',
+      }
+      );
+      response.code(400);
+      return response;
     }
   },
 };
@@ -141,17 +195,48 @@ const editEmailRoute = {
     const { email, password, currentEmail, currentPassword } = request.payload;
 
     try {
-      const result = await editProfile(uid, email, password, currentEmail, currentPassword);
+      const result = await editEmail(uid, email, password, currentEmail, currentPassword);
       if (result) {
-        return h.response({ message: 'Email berhasil di ubah' }).code(200);
+        const response = h.response({
+          status: 'Success',
+          message: 'Email berhasil di ubah',
+        }
+        );
+        response.code(200);
+        return response;
       } else {
-        return h.response({ message: 'User tidak diizinkan untuk mengedit profil' }).code(403);
+        const response = h.response({
+          status: 'Failed',
+          message: 'User tidak diizinkan untuk mengedit profil',
+        }
+        );
+        response.code(403);
+        return response;
       }
     } catch (error) {
-      console.error('Error melakukan update email:', error);
-      return h.response({ message: 'Error melakukan update email' }).code(500);
+      const response = h.response({
+        status: 'Failed',
+        message: 'Error melakukan update email',
+      }
+      );
+      response.code(500);
+      return response;
     }
   },
 };
 
-module.exports = [singUpRoute, signInRoute, userInfoRoute, signOutRoute, editEmailRoute, resetPasswordRoute];
+const uploadProfilePictureRoute = {
+  method: 'POST',
+  path: '/user/{uid}/profile-picture',
+  handler: uploadProfilePictureHandler,
+  options: {
+    payload: {
+      output: 'stream',
+      parse: true,
+      multipart: true,
+      allow: 'multipart/form-data',
+    },
+  },
+};
+
+module.exports = [singUpRoute, signInRoute, userInfoRoute, signOutRoute, editEmailRoute, resetPasswordRoute,uploadProfilePictureRoute];

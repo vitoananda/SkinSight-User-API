@@ -1,7 +1,17 @@
 const { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateEmail, updatePassword } = require('firebase/auth');
 const { doc, setDoc, getDoc, updateDoc } = require('firebase/firestore');
+const { getDownloadURL, ref, uploadBytes } = require('firebase/storage');
 const { auth, db } = require('../src/db/firebase');
 const { sendPasswordResetEmail } = require('firebase/auth');
+const { Storage } = require('@google-cloud/storage');
+require('dotenv').config();
+
+const storage = new Storage({
+  projectId: process.env.GOOGLE_CLOUD_PROJECT,
+  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+});
+
+const bucket = storage.bucket('skinsight-user-profilepicture');
 
 
 const signUp = async (email, password, name, phone) => {
@@ -59,7 +69,7 @@ const getUserData = async (uid) => {
   }
 };
 
-const editProfile = async (uid, email, password, currentEmail, currentPassword) => {
+const editEmail = async (uid, email, password, currentEmail, currentPassword) => {
   try {
     const { user } = await signInWithEmailAndPassword(auth, currentEmail, currentPassword);
     if (user.uid === uid) {
@@ -86,14 +96,62 @@ const editProfile = async (uid, email, password, currentEmail, currentPassword) 
 };
 
 const resetPassword = async (email) => {
-    try {
-      await sendPasswordResetEmail(auth, email);
-      console.log('Link reset email telah dikirimkan ke:', email);
-    } catch (error) {
-      console.log('Error mengirim email reset password:', error);
-      throw error;
+  try {
+    await sendPasswordResetEmail(auth, email);
+    console.log('Link reset email telah dikirimkan ke:', email);
+  } catch (error) {
+    console.log('Error mengirim email reset password:', error);
+    throw error;
+  }
+};
+
+const uploadProfilePictureHandler = async (request, h) => {
+  console.log(request.payload.file);
+  try {
+    if (!request.payload.file) {
+      return h.response('No file uploaded.').code(400);
     }
-  };
 
-module.exports = { signUp, signIn, signOutUser, getUserData, editProfile, resetPassword };
+    return new Promise(async (resolve, reject) => {
+      // Create a new blob in the bucket and upload file data
+      const blob = bucket.file(request.payload.file.hapi.filename);
+      const blobStream = blob.createWriteStream();
 
+      blobStream.on('error', (err) => {
+        reject(err);
+      });
+
+      blobStream.on('finish', async () => {
+        // File successfully uploaded to the bucket
+
+        // Get the public URL of the uploaded file
+        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+
+        // Extract UID from request parameters
+        const { uid } = request.params;
+
+        // Update user document with imageUrl
+        const userDoc = doc(db, 'users', uid);
+        await updateDoc(userDoc, { imgUrl: publicUrl });
+
+        resolve(h.response('Profile picture berhasil ditambahkan.').code(200));
+      });
+
+      blobStream.end(request.payload.file._data);
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+module.exports = {
+  signUp,
+  signIn,
+  signOutUser,
+  getUserData,
+  editEmail,
+  resetPassword,
+  uploadProfilePictureHandler,
+
+};

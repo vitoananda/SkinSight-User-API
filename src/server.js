@@ -1,5 +1,7 @@
 const Hapi = require('@hapi/hapi');
 const routes = require('./routes');
+require('dotenv').config();
+const { multerMid } = require('./handler');
  
  
 const init = async () => {
@@ -9,7 +11,7 @@ const init = async () => {
   });
  
   server.route(routes);
- 
+  
   await server.start();
   console.log(`Server berjalan pada ${server.info.uri}`);
 };
