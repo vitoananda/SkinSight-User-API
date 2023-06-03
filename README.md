@@ -1,9 +1,7 @@
 # How to use
 clone repository dengan 
-```json
-{
+```
   git clone https://github.com/vitoananda/SkinSight-User-API.git
-}
 ```
 
 Kemudian masukan file keyfile,json yang anda dapatkan dari service account anda yang memiliki role Cloud Storage Admin, Cloud Storage Creator, dan Cloud Storage Viewer
