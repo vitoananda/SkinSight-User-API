@@ -258,4 +258,4 @@ Response:
   "message" : "Ukuran file melebihi batas maksimum (10MB)"
 }
 ```
-400 JIka ikuran file melebihi batas maksimum (10MB)
+400 JIka ukuran file melebihi batas maksimum (10MB)
