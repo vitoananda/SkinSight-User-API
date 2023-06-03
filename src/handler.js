@@ -11,6 +11,9 @@ const storage = new Storage({
   keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
 });
 
+const fs = require('fs');
+const Path = require('path');
+
 const bucket = storage.bucket('skinsight-user-profilepicture');
 
 
@@ -106,24 +109,31 @@ const resetPassword = async (email) => {
 };
 
 const uploadProfilePictureHandler = async (request, h) => {
-  console.log(request.payload.file);
   try {
     if (!request.payload.file) {
       const response = h.response({
         status: 'Failed',
-        message : 'Tidak ada file yang ditambahkan'
+        message: 'Tidak ada file yang ditambahkan',
       });
       response.code(400);
+      return response;
     }
 
-    return new Promise(async (resolve, reject) => {
-      const blob = bucket.file(request.payload.file.hapi.filename);
+    const { uid } = request.params;
+    const fileName = request.payload.file.hapi.filename;
+    const blob = bucket.file(fileName);
+    const [exists] = await blob.exists();
+    if (exists) {
+      await blob.delete();
+    }
+
+    return new Promise((resolve, reject) => {
       const blobStream = blob.createWriteStream();
 
       blobStream.on('error', (err) => {
         const response = h.response({
           status: 'Failed',
-          message : 'Terjadi error menambahkan profile picture'
+          message: 'Terjadi error menambahkan profile picture',
         });
         response.code(500);
         reject(response);
@@ -131,13 +141,12 @@ const uploadProfilePictureHandler = async (request, h) => {
 
       blobStream.on('finish', async () => {
         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-        const { uid } = request.params;
         const userDoc = doc(db, 'users', uid);
         await updateDoc(userDoc, { imgUrl: publicUrl });
 
         const response = h.response({
           status: 'Success',
-          message : 'Profile picture berhasil ditambahkan'
+          message: 'Profile picture berhasil ditambahkan',
         });
         response.code(200);
         resolve(response);
@@ -146,9 +155,18 @@ const uploadProfilePictureHandler = async (request, h) => {
       blobStream.end(request.payload.file._data);
     });
   } catch (error) {
-    throw error;
+    console.error(error); // Log the error for debugging purposes
+
+    const response = h.response({
+      status: 'Failed',
+      message: 'An internal server error occurred',
+      error: error.message, // Include the error message in the response
+    });
+    response.code(500);
+    return response;
   }
 };
+
 
 
 module.exports = {

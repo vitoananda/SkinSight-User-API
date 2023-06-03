@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const { multerMid, signUp, signIn, signOutUser, getUserData, editEmail, resetPassword, uploadProfilePictureHandler } = require('../src/handler');
+const Boom = require('@hapi/boom');
 
 const singUpRoute = {
   method: 'POST',
@@ -235,6 +236,10 @@ const uploadProfilePictureRoute = {
       parse: true,
       multipart: true,
       allow: 'multipart/form-data',
+      maxBytes: 1048576 * 10,
+      failAction: async (request, h, err) => {
+        throw Boom.badRequest('Ukuran file melebihi batas maksimum (10MB)');
+      },
     },
   },
 };

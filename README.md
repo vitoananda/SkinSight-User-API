@@ -1,3 +1,15 @@
+# How to use
+clone repository dengan 
+```json
+{
+  git clone https://github.com/vitoananda/SkinSight-User-API.git
+}
+```
+
+Kemudian masukan file keyfile,json yang anda dapatkan dari service account anda yang memiliki role Cloud Storage Admin, Cloud Storage Creator, dan Cloud Storage Viewer
+
+Kemudian ubah isi file .env anda dengan konfigurasi project firebase anda
+
 # Endpoints
 
 | Method | Endpoint           |
@@ -241,3 +253,11 @@ Response:
 }
 ```
 500 Jika terjadi error menambahkan profile picture
+
+```json
+{
+  "status": "Failed",
+  "message" : "Ukuran file melebihi batas maksimum (10MB)"
+}
+```
+400 JIka ikuran file melebihi batas maksimum (10MB)
