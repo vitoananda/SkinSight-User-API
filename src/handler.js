@@ -108,7 +108,7 @@ const resetPassword = async (email) => {
   }
 };
 
-const uploadProfilePictureHandler = async (request, h) => {
+const uploadProfilePicture = async (request, h) => {
   try {
     if (!request.payload.file) {
       const response = h.response({
@@ -176,6 +176,6 @@ module.exports = {
   getUserData,
   editEmail,
   resetPassword,
-  uploadProfilePictureHandler,
+  uploadProfilePicture,
 
 };

@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { multerMid, signUp, signIn, signOutUser, getUserData, editEmail, resetPassword, uploadProfilePictureHandler } = require('../src/handler');
+const { multerMid, signUp, signIn, signOutUser, getUserData, editEmail, resetPassword, uploadProfilePicture } = require('../src/handler');
 const Boom = require('@hapi/boom');
 
 const singUpRoute = {
@@ -229,7 +229,7 @@ const editEmailRoute = {
 const uploadProfilePictureRoute = {
   method: 'POST',
   path: '/user/{uid}/profile-picture',
-  handler: uploadProfilePictureHandler,
+  handler: uploadProfilePicture,
   options: {
     payload: {
       output: 'stream',
