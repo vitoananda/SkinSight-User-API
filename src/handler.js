@@ -98,6 +98,27 @@ const editEmail = async (uid, email, password, currentEmail, currentPassword) =>
   }
 };
 
+const editName = async (uid, name, currentName) => {
+  try {
+    const userDoc = doc(db, 'users', uid);
+
+    const userSnapshot = await getDoc(userDoc);
+    const userData = userSnapshot.data();
+    if (userData.name === currentName) {
+      const updateData = { name };
+
+      await updateDoc(userDoc, updateData);
+
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error('Error melakukan update nama:', error);
+    throw new Error('Gagal melakukan update nama');
+  }
+};
+
 const resetPassword = async (email) => {
   try {
     await sendPasswordResetEmail(auth, email);
@@ -177,5 +198,6 @@ module.exports = {
   editEmail,
   resetPassword,
   uploadProfilePicture,
+  editName
 
 };

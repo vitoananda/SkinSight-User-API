@@ -18,6 +18,7 @@ Kemudian ubah isi file .env anda dengan konfigurasi project firebase anda
 | GET    | /user/{uid}        | 
 | POST   | /sign-out          | 
 | PUT    | /edit-email/{uid}  |
+| PUT    | /edit-name/{uid}   |
 | POST   | /user/{uid}/profile-picture  |
 
 
@@ -52,10 +53,10 @@ Response:
 ```json
 {
   "status": "Failed",
-  "message": "Error menambahkan user"
+  "message": "Email sudah terdaftar"
 }
 ```
-400 Jika user gagal ditambahkan
+409 Jika email sudah terdaftar
 
 
 
@@ -221,6 +222,45 @@ Response:
 {
    "status": "Failed",
    "message": "Error melakukan update email",
+}
+```
+500 Jika terjadi error melakukan edit email
+
+### <b>PUT /edit-name/{uid}</b>
+Mengubah name user berdasarkan uid.
+
+Request parameter:
+uid: uid user
+
+Request body:
+```json
+{
+  "name": "newname",
+  "currentName": "currentname"
+}
+```
+Response:
+
+```json
+{
+   "status": "Success",
+   "message": "Berhasil melakukan update nama",
+}
+```
+200 Jika email berhasil di ubah
+
+```json
+{
+   "status": "Failed",
+   "message": "User tidak diizinkan untuk mengedit profil",
+}
+```
+403 Jika user tidak diizinkan untuk mengedit profil
+
+```json
+{
+   "status": "Failed",
+   "message": "Error melakukan update nama",
 }
 ```
 500 Jika terjadi error melakukan edit email

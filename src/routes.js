@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { multerMid, signUp, signIn, signOutUser, getUserData, editEmail, resetPassword, uploadProfilePicture } = require('../src/handler');
+const { multerMid, signUp, signIn, signOutUser, getUserData, editEmail, resetPassword, uploadProfilePicture,editName } = require('../src/handler');
 const Boom = require('@hapi/boom');
 
 const singUpRoute = {
@@ -23,7 +23,7 @@ const singUpRoute = {
     } catch (error) {
       const response = h.response({
         status: 'Failed',
-        message: 'Error menambahkan user',
+        message: error.message,
     })
     response.code(400);
     return response;
@@ -226,6 +226,52 @@ const editEmailRoute = {
   },
 };
 
+const editNameRoute = {
+  method: 'PUT',
+  path: '/edit-name/{uid}',
+  options: {
+    validate: {
+      payload: Joi.object({
+        name: Joi.string().required(),
+        currentName: Joi.string().required(),
+      }),
+      params: Joi.object({
+        uid: Joi.string().required(),
+      }),
+    },
+  },
+  handler: async (request, h) => {
+    const { uid } = request.params;
+    const { name, currentName } = request.payload;
+
+    try {
+      const result = await editName(uid, name, currentName);
+      if (result) {
+        const response = h.response({
+          status: 'Success',
+          message: 'Berhasil melakukan update nama',
+        });
+        response.code(200);
+        return response;
+      } else {
+        const response = h.response({
+          status: 'Failed',
+          message: 'User tidak diizinkan untuk mengedit profil',
+        });
+        response.code(403);
+        return response;
+      }
+    } catch (error) {
+      const response = h.response({
+        status: 'Failed',
+        message: 'Error melakukan update nama',
+      });
+      response.code(500);
+      return response;
+    }
+  },
+};
+
 const uploadProfilePictureRoute = {
   method: 'POST',
   path: '/user/{uid}/profile-picture',
@@ -244,4 +290,4 @@ const uploadProfilePictureRoute = {
   },
 };
 
-module.exports = [singUpRoute, signInRoute, userInfoRoute, signOutRoute, editEmailRoute, resetPasswordRoute,uploadProfilePictureRoute];
+module.exports = [singUpRoute, signInRoute, userInfoRoute, signOutRoute, editEmailRoute, resetPasswordRoute,uploadProfilePictureRoute,editNameRoute];
